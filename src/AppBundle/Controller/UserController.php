@@ -33,7 +33,7 @@ class UserController extends Controller
     public function registerWalletProprietaireAction(Request $request)
     {
         // Instantiation des sessions
-        $session = new Session();
+        $session = $request->getSession();
 
         // Check si le propriétaire possède déjà un compte en sessions
         if ($session->has("wallet") && $session->has("email")) {
