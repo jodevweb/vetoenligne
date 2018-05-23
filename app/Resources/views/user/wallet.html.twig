@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {#flash messages#}
+    {% if app.session.flashBag.has('success') %}
+        <div class="message success">
+            {% for msg in app.session.flashBag.get('success') %}
+                {{ msg }}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if formWallet is not null %}
+        {{ form_start(formWallet) }}
+        {{ form_widget(formWallet) }}
+        <input type="submit" value="Créer">
+        {{ form_end(formWallet) }}
+    {% else %}
+        <div>WALLET ID : {{ account.ID }}</div>
+        <div>WALLET BALANCE : {{ account.BAL }} €</div>
+        <div>WALLET FULL NAME : {{ account.NAME }}</div>
+        <div>WALLET EMAIL : {{ account.EMAIL }}</div>
+        <div>WALLET STATUS : {% if account.STATUS == 5 %}registered, KYC 1{% elseif account.STATUS == 2 %}registered, KYC incomplete{% elseif account.STATUS == 3 %}registered, rejected KYC{% elseif account.STATUS == 6 %}registered, KYC 2{% elseif account.STATUS == 7 %}registered, KYC 3{% elseif account.STATUS == 8 %}registered, expired KYC{% elseif account.STATUS == 10 %}blocked{% elseif account.STATUS == 12 %}closed{% elseif account.STATUS == 13 %}registered, status is being updated from KYC 2 to KYC 3{% elseif account.STATUS == 14 %}one-time customer{% elseif account.STATUS == 15 %}special wallet for crowdlending{% elseif account.STATUS == 16 %}wallet technique{% endif %}</div>
+        <div>WALLET DOCUMENT
+            : {% if account.kycDocs is iterable and account.kycDocs is not empty %}{% for docs in account.kycDocs %}DOC ID : {{ docs.ID }} DOC STATUS : {{ docs.STATUS }} DOC TYPE : {{ docs.TYPE }} DOC VALIDITE LIMITE : {{ docs.VD }}{% endfor %}{% else %}NO{% endif %}</div>
+        <div>WALLET IBANS
+            : {% if account.ibans is iterable and account.ibans is not empty %}{% for ibans in account.ibans %}IBAN ID : {{ ibans.ID }} IBAN STATUS : {{ ibans.STATUS }} IBAN NUMBER : {{ ibans.IBAN }} IBAN BIC : {{ ibans.BIC }}{% endfor %}{% else %}NO{% endif %}</div>
+        <div>WALLET SDD MANDATES
+            : {% if account.sddMandates is iterable and account.sddMandates is not empty %}{% for mandate in account.sddMandates %}MANDATE ID : {{ mandate.ID }} MANDATE STATUS : {{ mandate.STATUS }} IBAN NUMBER : {{ mandate.IBAN }} IBAN BIC : {{ mandate.BIC }}{% endfor %}{% else %}NO{% endif %}</div>
+        <div>WALLET CARD
+            : {% if account.cards is iterable and account.cards is not empty %}{% for card in account.cards %}CARD ID : {{ card.ID }} CARD IS3DS : {{ card.EXTRA.IS3DS }}{% endfor %}{% else %}NO{% endif %}</div>
+        <hr>
+        <div>
+            Profil complet à <strong>{{ noteFinal }}%</strong>
+            {% if etapesManquantes is not empty %}
+                <p>Liste des étapes manquantes:</p>
+                <ul>
+                    {% for etapes in etapesManquantes %}
+                        <li>{{ etapes }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}
